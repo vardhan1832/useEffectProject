@@ -1,30 +1,33 @@
-import React, { useState,  useReducer } from "react";
-
+import React, { useState, useReducer, useContext } from "react";
+import Input from "../Input/Input";
 import Card from "../UI/Card/Card";
 import classes from "./Login.module.css";
 import Button from "../UI/Button/Button";
+import AuthContext from "../store/auth-context";
 
 const emailStateChange = (state, action) => {
-  if(action.type === 'input'){
-    return {value: action.value,isvalid:action.value.includes('@')}
+  if (action.type === "input") {
+    return { value: action.value, isvalid: action.value.includes("@") };
   }
-  if(action.type === 'blur'){
-    return {value:state.value,isvalid:state.value.includes('@')}
+  if (action.type === "blur") {
+    return { value: state.value, isvalid: state.value.includes("@") };
   }
   return { value: "", isvalid: false };
 };
 
-const passwordStateChange = (state,action) =>{
-  if(action.type === 'password'){
-    return {value: action.value,isvalid: action.value.trim().length > 6}
+const passwordStateChange = (state, action) => {
+  if (action.type === "password") {
+    return { value: action.value, isvalid: action.value.trim().length > 6 };
   }
-  if(action.type === 'blur'){
-    return {value: state.value,isvalid: state.value.trim().length > 6}
+  if (action.type === "blur") {
+    return { value: state.value, isvalid: state.value.trim().length > 6 };
   }
-  return {value: '',isvalid: false}
-}
+  return { value: "", isvalid: false };
+};
 
-const Login = (props) => {
+const Login = () => {
+  const authctx = useContext(AuthContext);
+
   // const [enteredEmail, setEnteredEmail] = useState("");
   // const [emailIsValid, setEmailIsValid] = useState();
   // const [enteredPassword, setEnteredPassword] = useState("");
@@ -37,10 +40,10 @@ const Login = (props) => {
     value: "",
     isvalid: null,
   });
-  const [passwordState , passwordDispatch] = useReducer(passwordStateChange,{
-    value: '',
-    isvalid: null
-  })
+  const [passwordState, passwordDispatch] = useReducer(passwordStateChange, {
+    value: "",
+    isvalid: null,
+  });
 
   //  useEffect(()=>{
   //    const time = setTimeout(() => {
@@ -56,7 +59,7 @@ const Login = (props) => {
   //  },[enteredEmail,enteredPassword,enteredCollege])
 
   const emailChangeHandler = (event) => {
-    emailDispatch({type:'input',value:event.target.value})
+    emailDispatch({ type: "input", value: event.target.value });
     setFormIsValid(
       event.target.value.includes("@") &&
         passwordState.value.trim().length > 6 &&
@@ -65,7 +68,7 @@ const Login = (props) => {
   };
 
   const passwordChangeHandler = (event) => {
-    passwordDispatch({type:'password',value:event.target.value})
+    passwordDispatch({ type: "password", value: event.target.value });
     setFormIsValid(
       emailState.value.includes("@") &&
         event.target.value.trim().length > 6 &&
@@ -83,11 +86,11 @@ const Login = (props) => {
   };
 
   const validateEmailHandler = () => {
-    emailDispatch({type:'blur'})
+    emailDispatch({ type: "blur" });
   };
 
   const validatePasswordHandler = () => {
-    passwordDispatch({type:'blur'})
+    passwordDispatch({ type: "blur" });
   };
 
   const validateCollegeHandler = () => {
@@ -96,7 +99,7 @@ const Login = (props) => {
 
   const submitHandler = (event) => {
     event.preventDefault();
-    props.onLogin(emailState.value, passwordState.value, enteredCollege);
+    authctx.onLogin(emailState.value, passwordState.value, enteredCollege);
   };
 
   return (
@@ -108,7 +111,7 @@ const Login = (props) => {
           }`}
         >
           <label htmlFor="email">E-Mail</label>
-          <input
+          <Input
             type="email"
             id="email"
             value={emailState.value}
@@ -122,7 +125,7 @@ const Login = (props) => {
           }`}
         >
           <label htmlFor="password">Password</label>
-          <input
+          <Input
             type="password"
             id="password"
             value={passwordState.value}
@@ -136,7 +139,7 @@ const Login = (props) => {
           }`}
         >
           <label htmlFor="college">College</label>
-          <input
+          <Input
             type="text"
             id="college"
             value={enteredCollege}
